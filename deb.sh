@@ -82,7 +82,7 @@ installations() {
   sudo apt -y purge firewalld
 
   # Install
-  sudo apt -y install ca-certificates debian-keyring apt-utils cron bash-completion 
+  sudo apt -y install ca-certificates apt-utils cron bash-completion 
   sudo apt -y install curl git wget preload locales socat
   sleep 0.5
   echo 
