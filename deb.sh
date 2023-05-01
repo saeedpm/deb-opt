@@ -215,3 +215,183 @@ sysctl_optimizations() {
   echo 
   sleep 0.5
 }
+
+
+# Remove old SSH config to prevent duplicates.
+remove_old_ssh_conf() {
+  # Make a backup of the original sshd_config file
+  cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
+
+  echo 
+  echo "$(tput setaf 2)----- Default SSH Config file Saved. Directory: /etc/ssh/sshd_config.bak$(tput sgr0)"
+  echo 
+  sleep 1
+  
+  # Disable DNS lookups for connecting clients
+  sed -i 's/#UseDNS yes/UseDNS no/' $SSH_PATH
+
+  # Enable compression for SSH connections
+  sed -i 's/#Compression no/Compression yes/' $SSH_PATH
+
+  # Remove less efficient encryption ciphers
+  sed -i 's/Ciphers .*/Ciphers aes256-ctr,chacha20-poly1305@openssh.com/' $SSH_PATH
+
+  # Remove these lines
+  sed -i '/MaxAuthTries/d' $SSH_PATH
+  sed -i '/MaxSessions/d' $SSH_PATH
+  sed -i '/TCPKeepAlive/d' $SSH_PATH
+  sed -i '/ClientAliveInterval/d' $SSH_PATH
+  sed -i '/ClientAliveCountMax/d' $SSH_PATH
+  sed -i '/AllowAgentForwarding/d' $SSH_PATH
+  sed -i '/PermitRootLogin/d' $SSH_PATH
+  sed -i '/AllowTcpForwarding/d' $SSH_PATH
+  sed -i '/GatewayPorts/d' $SSH_PATH
+  sed -i '/PermitTunnel/d' $SSH_PATH
+
+}
+
+
+## Update SSH config
+update_sshd_conf() {
+  echo 
+  echo "$(tput setaf 3)----- Optimizing SSH.$(tput sgr0)"
+  echo 
+  sleep 1
+
+  # Enable TCP keep-alive messages
+  echo "TCPKeepAlive yes" | tee -a $SSH_PATH
+
+  # Configure client keep-alive messages
+  echo "ClientAliveInterval 3000" | tee -a $SSH_PATH
+  echo "ClientAliveCountMax 100" | tee -a $SSH_PATH
+
+  # Allow agent forwarding
+  echo "AllowAgentForwarding yes" | tee -a $SSH_PATH
+
+  #Permit Root Login
+  echo "PermitRootLogin yes" | tee -a $SSH_PATH
+
+  # Allow TCP forwarding
+  echo "AllowTcpForwarding yes" | tee -a $SSH_PATH
+
+  # Enable gateway ports
+  echo "GatewayPorts yes" | tee -a $SSH_PATH
+
+  # Enable tunneling
+  echo "PermitTunnel yes" | tee -a $SSH_PATH
+
+  # Restart the SSH service to apply the changes
+  service ssh restart
+
+  echo 
+  echo $(tput setaf 2)----- SSH is Optimized.$(tput sgr0)
+  echo 
+}
+
+
+# System Limits Optimizations
+limits_optimizations() {
+  echo
+  echo "$(tput setaf 3)----- Optimizing System Limits.$(tput sgr0)"
+  echo 
+  sleep 1
+
+  echo '* soft     nproc          655350' >> $LIM_PATH
+  echo '* hard     nproc          655350' >> $LIM_PATH
+  echo '* soft     nofile         655350' >> $LIM_PATH
+  echo '* hard     nofile         655350' >> $LIM_PATH
+
+  echo 'root soft     nproc          655350' >> $LIM_PATH
+  echo 'root hard     nproc          655350' >> $LIM_PATH
+  echo 'root soft     nofile         655350' >> $LIM_PATH
+  echo 'root hard     nofile         655350' >> $LIM_PATH
+
+  sudo sysctl -p
+  echo 
+  echo $(tput setaf 2)----- System Limits Optimized.$(tput sgr0)
+  echo 
+  sleep 0.5
+}
+
+
+## UFW Optimizations
+ufw_optimizations() {
+  echo
+  echo "$(tput setaf 3)----- Optimizing UFW.$(tput sgr0)"
+  echo 
+  sleep 1
+
+  # Open default ports.
+  sudo ufw allow 21
+  sudo ufw allow 21/udp
+  sudo ufw allow 22
+  sudo ufw allow 22/udp
+  sudo ufw allow 80
+  sudo ufw allow 80/udp
+  sudo ufw allow 443
+  sudo ufw allow 443/udp
+  sleep 0.5
+
+  # Change the UFW config to use System config.
+  sed -i 's+/etc/ufw/sysctl.conf+/etc/sysctl.conf+gI' /etc/default/ufw
+
+  # Reload if running
+  ufw reload
+  echo 
+  echo $(tput setaf 2)----- Firewall is Optimized.$(tput sgr0)
+  echo 
+  sleep 0.5
+}
+
+
+# RUN BABY, RUN
+check_if_running_as_root
+sleep 0.5
+
+check_debian
+sleep 0.5
+
+fix_dns
+sleep 0.5
+
+complete_update
+sleep 0.5
+
+installations
+sleep 0.5
+
+enable_packages
+sleep 0.5
+
+swap_maker
+sleep 0.5
+
+remove_old_sysctl
+sleep 0.5
+
+sysctl_optimizations
+sleep 0.5
+
+remove_old_ssh_conf
+sleep 0.5
+
+update_sshd_conf
+sleep 0.5
+
+limits_optimizations
+sleep 1
+
+ufw_optimizations
+sleep 0.5
+
+
+# Outro
+echo 
+echo $(tput setaf 2)=========================$(tput sgr0)
+echo "$(tput setaf 2)----- Done! Server is Optimized.$(tput sgr0)"
+echo "$(tput setaf 3)----- Reboot in 5 seconds...$(tput sgr0)"
+echo $(tput setaf 2)=========================$(tput sgr0)
+sudo sleep 5 ; shutdown -r 0
+echo 
+echo 
+echo 
