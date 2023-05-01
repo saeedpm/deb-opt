@@ -1,19 +1,6 @@
 #!/bin/sh
 
 
-# Intro
-echo 
-echo $(tput setaf 2)=======================================================$(tput sgr0)
-echo "$(tput setaf 2)----- This script will automatically Optimize your Debian Server.$(tput sgr0)"
-echo "$(tput setaf 2)----- Tested on Debian 11+.$(tput sgr0)"
-echo "$(tput setaf 3)----- Root access is required.$(tput sgr0)" 
-echo "$(tput setaf 2)----- Source is @ https://github.com/hawshemi/linux-optimizer$(tput sgr0)" 
-echo $(tput setaf 2)=======================================================$(tput sgr0)
-echo 
-
-sleep 1
-
-
 # Declare Paths
 SYS_PATH="/etc/sysctl.conf"
 LIM_PATH="/etc/security/limits.conf"
@@ -96,7 +83,7 @@ installations() {
 
   # Install
   sudo apt -y install ca-certificates debian-keyring apt-utils cron bash-completion 
-  sudo apt -y install curl git ufw wget preload locales socat
+  sudo apt -y install curl git wget preload locales socat
   sleep 0.5
   echo 
   echo "$(tput setaf 2)----- Useful Packages Installed Succesfully.$(tput sgr0)"
