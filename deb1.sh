@@ -1,6 +1,5 @@
 #!/bin/sh
 
-
 # Declare Paths
 SYS_PATH="/etc/sysctl.conf"
 LIM_PATH="/etc/security/limits.conf"
