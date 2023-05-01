@@ -95,8 +95,8 @@ installations() {
   sudo apt -y purge firewalld
 
   # Install
-  sudo apt -y install software-properties-common build-essential apt-transport-https iptables iptables-persistent lsb-release ca-certificates debian-keyring gnupg2 apt-utils cron bash-completion 
-  sudo apt -y install curl git ufw wget preload locales nano vim socat net-tools haveged libssl-dev
+  sudo apt -y install ca-certificates debian-keyring apt-utils cron bash-completion 
+  sudo apt -y install curl git ufw wget preload locales socat
   sleep 0.5
   echo 
   echo "$(tput setaf 2)----- Useful Packages Installed Succesfully.$(tput sgr0)"
@@ -107,7 +107,7 @@ installations() {
 
 # Enable packages at server boot
 enable_packages() {
-  sudo systemctl enable preload haveged cron
+  sudo systemctl enable preload cron
   echo 
   echo "$(tput setaf 2)----- Packages Enabled Succesfully.$(tput sgr0)"
   echo
